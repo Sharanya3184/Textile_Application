@@ -1,0 +1,169 @@
+
+<!-- wishcart.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .wishcart-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 20px;
+    justify-content: flex-start;
+  }
+  .wishcart-item {
+    border: 1.5px solid #d4ac0d;
+    border-radius: 10px;
+    padding: 18px 16px 16px 16px;
+    background: linear-gradient(135deg, #fcf3cf 90%, #f9e79f 100%);
+    width: 250px;
+    box-shadow: 0 2px 8px rgba(212,172,13,0.08);
+    transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .wishcart-item:hover {
+    transform: scale(1.025) rotate(-1deg);
+    box-shadow: 0 6px 18px rgba(212,172,13,0.15);
+    border-color: #f7ca18;
+  }
+  .wishcart-item img {
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #fff;
+    box-shadow: 0 1px 4px #f9e79f33;
+    transition: filter 0.18s;
+  }
+  .wishcart-item:hover img {
+    filter: brightness(1.04) saturate(1.05);
+  }
+  .remove-btn {
+    background: linear-gradient(90deg, #b03a2e 80%, #e6b0aa 100%);
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 8px;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 1px 4px #b03a2e18;
+    outline: none;
+    font-size: 1em;
+  }
+  .remove-btn:hover, .remove-btn:focus {
+    background: #922b21;
+    transform: scale(1.04) rotate(-1.5deg);
+  }
+  .wishcart-item .tooltip {
+    visibility: hidden;
+    background: #f9e79f;
+    color: #7d6608;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 9px;
+    position: absolute;
+    z-index: 1;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.92em;
+    box-shadow: 0 2px 8px #f9e79f33;
+    opacity: 0;
+    transition: opacity 0.18s;
+    pointer-events: none;
+  }
+  .remove-btn:focus + .tooltip,
+  .remove-btn:hover + .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  .empty-cart {
+    font-size: 1.1em;
+    margin-top: 40px;
+    text-align: center;
+    animation: shake 0.7s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px);}
+    20%, 80% { transform: translateX(2px);}
+    30%, 50%, 70% { transform: translateX(-4px);}
+    40%, 60% { transform: translateX(4px);}
+  }
+  .wishcart-item .confetti {
+    display: none;
+    position: absolute;
+    top: 8px; right: 8px;
+    font-size: 1.3em;
+    pointer-events: none;
+    animation: pop 0.7s cubic-bezier(.36,.07,.19,.97) forwards;
+  }
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(0.5);}
+    60% { opacity: 1; transform: scale(1.2);}
+    100% { opacity: 0; transform: scale(1);}
+  }
+</style>
+
+<h2>🛒 Your Wishcart</h2>
+{% if products %}
+  <div class="wishcart-container" id="wishcart-container">
+    {% for product in products %}
+      <div class="wishcart-item" data-product-id="{{ product._id }}">
+        <img src="{{ url_for('get_product_image', product_id=product._id) }}" width="150" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p>Price: ₹{{ product.price }}</p>
+        <form class="remove-form" action="{{ url_for('remove_from_wishcart', product_id=product._id) }}" method="post">
+          <button class="remove-btn" type="submit" title="Oops, changed your mind?">Remove 🚫</button>
+          <span class="tooltip">Click to remove this wish!<br>It’s not personal. 😉</span>
+        </form>
+        <span class="confetti">🎉</span>
+        <p style="font-size:0.95em;color:#b9770e;margin-top:8px;">
+          <em>“One less thing to wish for!”</em>
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+  <div style="margin-top:30px;text-align:center-align;">
+    <strong>Keep wishing, keep shopping! <span style="font-size:1.2em;">😄</span></strong>
+  </div>
+  <script>
+    // AJAX remove-from-wishcart
+    document.querySelectorAll('.remove-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const item = form.closest('.wishcart-item');
+        const confetti = item.querySelector('.confetti');
+        confetti.style.display = 'inline';
+        setTimeout(() => { confetti.style.display = 'none'; }, 800);
+
+        fetch(form.action, {
+          method: 'POST',
+          headers: {'X-Requested-With': 'XMLHttpRequest'}
+        }).then(resp => {
+          if (resp.ok) {
+            item.style.transition = 'opacity 0.4s, transform 0.4s';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8) rotate(-5deg)';
+            setTimeout(() => {
+              item.remove();
+              if (!document.querySelectorAll('.wishcart-item').length) {
+                document.getElementById('wishcart-container').outerHTML =
+                  `<div class="empty-cart">
+                    <p>😱 Your Wishcart is empty!</p>
+                    <p>Go ahead, add something you <b>really</b> don't need! 😉</p>
+                  </div>`;
+              }
+            }, 400);
+          }
+        });
+      });
+    });
+  </script>
+{% else %}
+  <div class="empty-cart">
+    <p>😱 Your Wishcart is empty!</p>
+    <p>Go ahead, add something you <b>really</b> don't need! 😉</p>
+  </div>
+{% endif %}
+{% endblock %}

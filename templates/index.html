@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4"><i class="fas fa-store"></i> Textile Store</h1>
+        <p class="lead mb-5">Your one-stop destination for textiles, furniture, and electronics</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-4">
+                <div class="card login-card">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Customer Login</h5>
+                        <p class="card-text">Access your account to browse products</p>
+                        <a href="{{ url_for('user_login') }}" class="btn btn-custom">Login</a>
+                        <div class="mt-3">
+                            <a href="{{ url_for('register') }}" class="text-decoration-none">New user? Register here</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card login-card">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-user-shield fa-3x text-danger mb-3"></i>
+                        <h5 class="card-title">Admin Login</h5>
+                        <p class="card-text">Administrative access for management</p>
+                        <a href="{{ url_for('admin_login') }}" class="btn btn-custom bg-danger">Admin Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

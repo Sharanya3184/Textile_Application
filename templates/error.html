@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error {{ error_code or "Unknown" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href= "static/error.css">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">{{ error_code or "Error" }}</div>
+        <div class="error-message">
+            {{ error_message or "Oops! Something went wrong." }}
+        </div>
+        <a href="login.html" class="home-link">Go To log !n PAgE </a>
+    </div>
+</body>
+</html>

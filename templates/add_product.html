@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+            <span class="me-2">🔙</span> Back to Dashboard
+        </a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card login-card elegant-card">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <span class="me-2 icon-large">🆕</span>
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Add New Product</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Flash messages -->
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" title="Close" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Product Name -->
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">
+                                <span class="me-1">🏷️</span> Product Name
+                            </label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" required>
+                        </div>
+
+                        <!-- Product Image Upload -->
+                        <div class="mb-3">
+                            <label for="product_image" class="form-label">
+                                <span class="me-1">🖼️</span> Product Image
+                            </label>
+                            <input type="file" class="form-control" id="product_image" name="product_image" 
+                                   accept=".png,.jpg,.jpeg,.gif,.webp" onchange="previewImage(this)">
+                            <div class="form-text">
+                                <small>📁 Supported formats: PNG, JPG, JPEG, GIF, WEBP (Max: 16MB)</small>
+                            </div>
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-3">
+                                <img id="preview" src="#" alt="Preview">
+                            </div>
+                        </div>
+
+                        <!-- Price and Category Row -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">
+                                    <span class="me-1">💰</span> Price (₹)
+                                </label>
+                                <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">
+                                    <span class="me-1">📂</span> Category
+                                </label>
+                                <select class="form-control" id="category" name="category" required>
+                                    <option value="">Select Category</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.name }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">
+                                <span class="me-2">➕</span> Add Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewImage(input) {
+    const preview = document.getElementById('preview');
+    const previewDiv = document.getElementById('imagePreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewDiv.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        previewDiv.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+body {
+    background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.elegant-card {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.03);
+    border-radius: 18px;
+    border: none;
+    background: #fff;
+    transition: box-shadow 0.3s;
+}
+
+.elegant-card:hover {
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.card-header {
+    border-radius: 18px 18px 0 0 !important;
+    background: linear-gradient(90deg, #007bff 60%, #0056b3 100%);
+    box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #2d3748;
+    letter-spacing: 0.02em;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.15);
+    background: #fff;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background: linear-gradient(45deg, #0056b3, #007bff);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.18);
+}
+
+#imagePreview {
+    text-align: center;
+    display: none;
+}
+
+#preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    transition: transform 0.3s ease, box-shadow 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+#preview:hover {
+    transform: scale(1.07);
+    box-shadow: 0 6px 24px rgba(0,123,255,0.15);
+}
+
+.alert-info {
+    border-radius: 8px;
+    font-size: 1rem;
+    background: linear-gradient(90deg, #e3f0ff 60%, #f8fafc 100%);
+    color: #0056b3;
+    border: 1px solid #b6d4fe;
+}
+
+@media (max-width: 768px) {
+    .elegant-card {
+        border-radius: 10px;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+}
+.icon-large {
+    font-size: 1.5rem;
+}
+</style>
+{% endblock %}

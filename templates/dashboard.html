@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-store"></i>  Premium Store
+        </a>
+        <div class="navbar-nav ms-auto">
+            <span class="navbar-text me-3">
+                👋 Welcome, {{ user_name }}
+                {% if is_admin %}
+                <span class="badge bg-warning text-dark">👑 Admin</span>
+                {% endif %}
+            </span>
+            <a class="nav-link" href="{{ url_for('logout') }}">
+                <i class="fas fa-sign-out-alt"></i> 🚪 Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+{% if recent_offers %}
+<div class="marquee bg-info bg-gradient py-2 mb-2 rounded shadow-sm">
+    <div class="marquee-content text-dark fw-semibold">
+        ⚡ <strong>HOT DEALS:</strong>
+        {% for offer in recent_offers %}
+            <span class="mx-2">{{ offer.name }} - ₹{{ offer.price }}</span>
+            {% if not loop.last %}<span class="text-muted">|</span>{% endif %}
+        {% endfor %}
+        <span class="ms-2">💰 Don't miss these amazing deals!</span>
+    </div>
+</div>
+{% endif %}
+
+<div class="container mt-3">
+    <div class="row justify-content-end">
+        <div class="col-auto">
+            {% if 'user_id' in session %}
+            <a href="{{ url_for('view_wishcart') }}" class="btn btn-outline-danger shadow-sm">
+                <i class="fas fa-heart"></i> Wishlist
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="container mt-5">
+        <div class="search-container">
+            <form action="{{ url_for('search_products') }}" method="GET" class="row g-3 align-items-center justify-content-center">
+                <div class="col-auto">
+                    <select class="form-select" name="category" aria-label="Product category">
+                        <option value="">📑 All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.name }}">🏷️ {{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="text" class="form-control" name="product_name" placeholder="🔍 Search products...">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-3 mb-4">
+                {% include 'product_card.html' %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        💬 {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" title="Close">
+                            <span class="visually-hidden">Close</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Admin Panel -->
+        {% if is_admin %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-panel shadow-lg border-0">
+                    <div class="card-header bg-warning text-dark d-flex align-items-center">
+                        <h5 class="mb-0">⚙️ Admin Dashboard</h5>
+                        <span class="ms-auto text-muted small">🔒 Restricted Access</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-2">
+                                <a href="{{ url_for('add_product') }}" class="btn btn-primary btn-lg w-100">
+                                    ➕ Add Product
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="{{ url_for('add_category') }}" class="btn btn-info btn-lg w-100">
+                                    🏷️ Add Category
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="{{ url_for('manage_products') }}" class="btn btn-success btn-lg w-100">
+                                    📊 Manage Products
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Offers Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="fw-bold mb-3">🔥 Featured Deals</h3>
+                {% if recent_offers %}
+                <div class="row">
+                    {% for offer in recent_offers %}
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="card offer-card h-100 shadow-sm border-0 hover-effect">
+                            <div class="offer-badge">
+                                <span class="badge bg-danger">🎯 OFFER</span>
+                            </div>
+                            <div class="product-image-container">
+                                {% if offer.has_image %}
+                                    <img src="{{ url_for('get_product_image', product_id=offer._id) }}" 
+                                         class="card-img-top product-image" 
+                                         alt="{{ offer.name }}">
+                                {% else %}
+                                    <div class="no-image-placeholder">
+                                        🖼️
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title fw-semibold">{{ offer.name }}</h6>
+                                <p class="card-text price-tag">
+                                    💰 ₹{{ "%.2f"|format(offer.price) }}
+                                </p>
+                                <p class="card-text text-muted small">
+                                    📅 {{ offer.upload_date.strftime('%d %b') }}
+                                </p>
+                                <p class="small text-success mb-0">
+                                    ⭐ Limited Time Offer!
+                                </p>
+                                <form action="{{ url_for('add_to_wishcart', product_id=offer._id) }}" method="post">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                        💝 Add to Wishlist
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <h5 class="text-muted">📭 No offers available</h5>
+                    <p class="text-muted">😴 Even our deals are taking a break!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="fw-bold mb-3">📑 Browse Categories</h3>
+                <div class="row">
+                    {% for category in categories %}
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="card category-card shadow-sm border-0 hover-effect">
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-semibold">🏷️ {{ category.name }}</h5>
+                                <a href="{{ url_for('view_category', category_name=category.name) }}" 
+                                   class="btn btn-primary">
+                                    👀 View Products
+                                </a>
+                                <div class="mt-2 text-muted small">
+                                    ⭐ Top picks in {{ category.name }}!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+}
+</style>
+
+<footer class="bg-light text-center text-lg-start mt-5 border-top shadow-sm">
+    <div class="text-center p-3">
+        © 2025 Premium Store 🛍️
+    </div>
+</footer>
+
+<style>
+/* ... (keep existing styles) ... */
+</style>
+{% endblock %}

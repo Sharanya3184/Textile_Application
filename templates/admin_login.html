@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* Professional styles */
+.login-card {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    border-radius: 16px;
+    border: none;
+    background: #fff;
+    transition: transform 0.2s;
+}
+.login-card:hover {
+    transform: scale(1.01) rotate(-1deg);
+}
+.card-header.bg-danger {
+    background: linear-gradient(90deg, #dc3545 60%, #ff7675 100%);
+    border-radius: 16px 16px 0 0;
+}
+.btn-custom {
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-custom:hover {
+    background: #fff !important;
+    color: #dc3545 !important;
+    border: 1px solid #dc3545;
+}
+.form-control:focus {
+    border-color: #ff7675;
+    box-shadow: 0 0 0 0.2rem rgba(220,53,69,.15);
+}
+
+/* Funny touches */
+.login-card {
+    animation: wiggle 1.5s infinite alternate ease-in-out;
+    animation-delay: 2s;
+}
+@keyframes wiggle {
+    0% { transform: rotate(-1deg);}
+    100% { transform: rotate(1deg);}
+}
+.card-header h4::after {
+    content: " 🚨";
+    animation: siren 1s infinite alternate;
+}
+@keyframes siren {
+    0% { filter: hue-rotate(0deg);}
+    100% { filter: hue-rotate(90deg);}
+}
+.card-body::before {
+    content: "Warning: May cause excessive security and mild giggles.";
+    display: block;
+    color: #ff7675;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+    text-align: center;
+    font-style: italic;
+}
+</style>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card login-card">
+                <div class="card-header text-center bg-danger text-white">
+                    <h4><i class="fas fa-user-shield"></i> Admin Login</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-custom bg-danger w-100">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('index') }}" class="text-decoration-none">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
