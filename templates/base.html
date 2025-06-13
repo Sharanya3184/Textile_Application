@@ -1,77 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Text!Le StorE{% endblock %}</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Text!Le StorE{% endblock %}</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 
-    <style>
-        .marquee {
-            width: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  <style>
+    :root {
+      --primary-color: #5e60ce;
+      --secondary-color: #7400b8;
+      --bg-start: #f9fafe;
+      --bg-end: #e4e7f5;
+      --text-color: #1e1e2f;
+    }
 
-            color: white;
-            padding: 10px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .marquee-content {
-            display: inline-block;
-            animation: scroll 20s linear infinite;
-        }
-        @keyframes scroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        .hero-section {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 100px 0;
-        }
-        .login-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-        .login-card:hover {
-            transform: translateY(-5px);
-        }
-        .btn-custom {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .btn-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            color: white;
-        }
-    </style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://www.transparenttextures.com/patterns/hexellence.png'),
+                  radial-gradient(circle at top left, var(--bg-start), var(--bg-end));
+      background-repeat: repeat;
+      background-size: cover;
+      min-height: 100vh;
+      overflow-x: hidden;
+      animation: fadeInBody 1.2s ease-in-out;
+    }
+
+    @keyframes fadeInBody {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .marquee {
+      width: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 14px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      font-weight: 500;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      border-left: 6px solid white;
+    }
+
+    .marquee-content {
+      display: inline-block;
+      animation: scroll 18s linear infinite;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .hero-section {
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(10px);
+      color: var(--text-color);
+      padding: 80px 40px;
+      border-radius: 20px;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 900px;
+      box-shadow: 0 15px 40px rgba(100, 100, 150, 0.15);
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.32);
+      backdrop-filter: blur(15px);
+      border-radius: 18px;
+      padding: 30px;
+      border: none;
+      box-shadow: 0 12px 30px rgba(85, 70, 170, 0.15);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      animation: fadeInCard 1s ease;
+    }
+
+    .login-card:hover {
+      transform: scale(1.035);
+      box-shadow: 0 22px 55px rgba(85, 70, 170, 0.25);
+    }
+
+    @keyframes fadeInCard {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn-custom {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border: none;
+      border-radius: 30px;
+      padding: 12px 32px;
+      color: #fff;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .btn-custom::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.2);
+      transform: skewX(-20deg);
+      transition: left 0.4s ease;
+    }
+
+    .btn-custom:hover::after {
+      left: 120%;
+    }
+
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(115, 100, 255, 0.3);
+    }
+
+    .alert {
+      border: none;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      font-size: 0.95rem;
+    }
+
+    .alert-info {
+      color: #003f88;
+      background-color: #e3e8ff;
+    }
+  </style>
 </head>
+
 <body>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="container mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+  
 
-    {% block content %}{% endblock %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for message in messages %}
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+  {% block content %}{% endblock %}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
