@@ -25,7 +25,6 @@ app = Flask(__name__)
 app.secret_key = 'sharanya@331'
 
 
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -33,7 +32,6 @@ def favicon():
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
-
 
 
 # ------------------------------ MONGODB CONNECTION ------------------------------
