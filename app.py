@@ -1,7 +1,7 @@
 # ------------------------------ IMPORTS ------------------------------
 
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
@@ -23,6 +23,13 @@ from modules import products_collection, categories_collection
 
 app = Flask(__name__)
 app.secret_key = 'sharanya@331'
+
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 
