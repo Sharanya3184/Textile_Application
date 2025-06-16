@@ -492,21 +492,21 @@ def manage_products():
         # Calculate pagination info
         total_pages = (total_products + per_page - 1) // per_page
         
-        return render_template('admin_manage_products.html', 
-                             products           =   products,
-                             current_page       =   page,
-                             total_pages        =   total_pages,
-                             total_products     =   total_products)
+        return render_template('manage_products.html',
+                             products=products,
+                             current_page=page,
+                             total_pages=total_pages,
+                             total_products=total_products)
     except Exception as e:
         flash(f'Error loading products: {str(e)}')
-        return render_template('admin_manage_products.html', 
+        return render_template('manage_products.html', 
                              products       =   [],
                              current_page   =   1,
                              total_pages    =   0,
                              total_products =   0)
     
 
-@app.route('/add_to_wishcart/<product_id>', methods=[' GET','POST'])
+@app.route('/Wishcart/<product_id>', methods=[' GET','POST'])
 @login_required
 def add_to_wishcart(product_id):
     if 'user_id' not in session:
@@ -543,7 +543,7 @@ def view_wishcart():
     wish_items = list(wishcart_collection.find({'user_id': ObjectId(user_id)}))
     product_ids = [item['product_id'] for item in wish_items]
     products = list(products_collection.find({'_id': {'$in': product_ids}}))
-    return render_template('wishcart.html', product_ids=product_ids, wish_items=wish_items, products=products)
+    return render_template('Wishcart.html', product_ids=product_ids, wish_items=wish_items, products=products)
 
 
 
