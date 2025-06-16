@@ -15,6 +15,7 @@ import io
 from bson import ObjectId
 from bson.regex import Regex
 from modules import products_collection, categories_collection
+from urllib.parse import unquote
 
 
 
@@ -286,8 +287,9 @@ def dashboard():
 @login_required
 def view_category(category_name):
     try:
-        products = list(products_collection.find({'category': category_name}))
-        return render_template('category.html', products=products, category_name=category_name)
+        category_name_decoded = unquote(category_name)
+        products = list(products_collection.find({'category': category_name_decoded}))
+        return render_template('category.html', products=products, category_name=category_name_decoded)
     except Exception as e:
         flash(f'Error loading category: {str(e)}')
         return render_template('category.html', products=[], category_name=category_name)
