@@ -9,9 +9,9 @@
     </div>
 </nav>
 
+
 <div class="container mt-4">
     <h2><i class="fas fa-list"></i> {{ category_name }}</h2>
-    
     {% if products %}
     <div class="row">
         {% for product in products %}
@@ -20,19 +20,19 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text">{{ product.description }}</p>
-                   <div class="product-image-container">
-                    {% if product.has_image %}
-                        <img src="{{ url_for('get_product_image', product_id=product._id) }}" 
-                             class="card-img-top product-image" 
-                             alt="{{ product.name }}"
-                             onclick="viewImageModal('{{ url_for('get_product_image', product_id=product._id) }}', '{{ product.name }}')">
-                    {% else %}
-                        <div class="no-image-placeholder">
-                            <i class="fas fa-image"></i>
-                            <p class="mb-0">No Image</p>
-                        </div>
-                    {% endif %}
-                </div>    
+                    <div class="product-image-container">
+                        {% if product.has_image %}
+                            <img src="{{ url_for('get_product_image', product_id=product._id) }}" 
+                                 class="card-img-top product-image" 
+                                 alt="{{ product.name }}"
+                                 onclick="viewImageModal('{{ url_for('get_product_image', product_id=product._id) }}', '{{ product.name }}')">
+                        {% else %}
+                            <div class="no-image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <p class="mb-0">No Image</p>
+                            </div>
+                        {% endif %}
+                    </div>
                 
                         <p class="card-text text-muted small">
                             <i class="fas fa-calendar"></i> {{ product.upload_date.strftime('%d %b %Y at %I:%M %p') }}
