@@ -472,7 +472,7 @@ def delete_product(product_id):
 
 
 # Admin: View all products for management
-@app.route('/admin/manage_products')
+@app.route('/admin/manage_products', methods=['GET', 'POST'])
 @admin_required
 def manage_products():
     try:
@@ -506,7 +506,7 @@ def manage_products():
                              total_products =   0)
     
 
-@app.route('/add_to_wishcart/<product_id>', methods=['POST'])
+@app.route('/add_to_wishcart/<product_id>', methods=[' GET','POST'])
 @login_required
 def add_to_wishcart(product_id):
     if 'user_id' not in session:
