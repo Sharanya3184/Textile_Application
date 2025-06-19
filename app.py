@@ -6,14 +6,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from modules import *
+from config import *
 from datetime import datetime
 import os
 import base64
 from functools import wraps
 from PIL import Image
 import io
-from config import *
-from decorators import *
 from bson import ObjectId
 from bson.regex import Regex
 from modules import products_collection, categories_collection
@@ -22,11 +21,11 @@ from urllib.parse import unquote
 
 
 
-
 # ------------------------------ FLASK APP SETUP ------------------------------
 
 app = Flask(__name__)
 app.secret_key = 'sharanya@331'
+
 
 
 # ------------------------------ INIT DEFAULT CATEGORIES ------------------------------
@@ -53,6 +52,37 @@ def init_categories():
 # Call the function to initialize categories
 init_categories()
 
+
+
+
+# ------------------------------ DECORATORS ------------------------------
+
+ADMIN_USERNAME = 'Admin'
+ADMIN_PASSWORD = 'Tomjerry@331'  
+
+
+
+# Decorator to check if a user is logged in before accessing certain pages
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Check if user or admin is logged in
+        if 'user_id' not in session and 'admin' not in session:
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin' not in session:
+            flash('Admin access required!')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # ------------------------------ ROUTES ------------------------------
