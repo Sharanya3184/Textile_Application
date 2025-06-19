@@ -15,7 +15,8 @@ import io
 from bson import ObjectId
 from bson.regex import Regex
 from urllib.parse import unquote
-
+from dotenv import load_dotenv
+load_dotenv()
 
 
 
