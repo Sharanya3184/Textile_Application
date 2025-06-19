@@ -6,7 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from modules import *
-from modules import products_collection, users_collection
 from datetime import datetime
 import os
 import base64
@@ -27,6 +26,14 @@ app.secret_key = 'sharanya@331'
 
 
 
+# ------------------------------ MONGODB CONNECTION ------------------------------
+
+client = MongoClient(MONGO_URL)
+db = client[DB_NAME]
+users_collection = db['users']
+products_collection = db['products']
+categories_collection = db['categories']
+wishcart_collection = db['wishlist']
 
 # ------------------------------ MONGODB CONNECTION ------------------------------
 
