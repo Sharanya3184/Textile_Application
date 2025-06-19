@@ -1,22 +1,24 @@
 # ------------------------------ IMPORTS ------------------------------
 
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
+import os
+import base64
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from modules import *
-from datetime import datetime
-import os
-import base64
+from config import *
+from decorators import *
 from functools import wraps
 from PIL import Image
-import io
 from bson import ObjectId
 from bson.regex import Regex
-from modules import products_collection, categories_collection
 from urllib.parse import unquote
-
+from modules import products_collection, categories_collection
+from init import *
+from dotenv import load_dotenv
+load_dotenv()
 
 
 
@@ -24,123 +26,6 @@ from urllib.parse import unquote
 
 app = Flask(__name__)
 app.secret_key = 'sharanya@331'
-
-
-
-
-# ------------------------------ MONGODB CONNECTION ------------------------------
-
-try:
-    users_collection         =  db['users']
-    products_collection      =  db['products']
-    categories_collection    =  db['categories']
-    wishcart_collection      =  db['wishcart']
-    print("MongoDB connected successfully")
-except Exception as e:
-    print(f"MongoDB connection error: {e}")
-
-
-
-# ------------------------------ CONFIG ------------------------------
-
-UPLOAD_FOLDER            =  'uploads'
-ALLOWED_EXTENSIONS       =   {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-MAX_FILE_SIZE            =   16 * 1024 * 1024  # 16MB limit
-
-app.config['UPLOAD_FOLDER']         =   UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH']    =   MAX_FILE_SIZE
-
-
-# ------------------------------ UPLOAD FOLDER INIT ------------------------------
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-
-# ------------------------------ IMAGE HELPERS ------------------------------
-
-def allowed_file(filename):
-    """Check if the uploaded file has an allowed extension"""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def compress_image(image_data, max_size=(800, 600), quality=85):
-    """Compress image to reduce size while maintaining quality"""
-    try:
-        image = Image.open(io.BytesIO(image_data))
-        
-        # Convert RGBA to RGB if necessary
-        if image.mode == 'RGBA':
-            image = image.convert('RGB')
-        
-        # Resize image if it's too large
-        image.thumbnail(max_size, Image.Resampling.LANCZOS)
-        
-        # Save compressed image to bytes
-        output = io.BytesIO()
-        image.save(output, format='JPEG', quality=quality, optimize=True)
-        return output.getvalue()
-    except Exception as e:
-        print(f"Error compressing image: {e}")
-        return image_data
-    
-
-
-# ------------------------------ INIT DEFAULT CATEGORIES ------------------------------
-
-def init_categories():
-    try:
-        default_categories = [
-            {'name': 'Offer Products', 'created_at': datetime.now()},
-            {'name': 'Furniture', 'created_at': datetime.now()},
-            {'name': 'Electronics', 'created_at': datetime.now()}
-        ]
-
-
-        # Check if each category exists, if not, add it
-        for category in default_categories:
-            if not categories_collection.find_one({'name': category['name']}):
-                categories_collection.insert_one(category)
-        print("Categories initialized successfully")
-    except Exception as e:
-        print(f"Error initializing categories: {e}")
-
-
-
-# Call the function to initialize categories
-init_categories()
-
-
-
-
-# ------------------------------ DECORATORS ------------------------------
-
-ADMIN_USERNAME = 'Admin'
-ADMIN_PASSWORD = 'Tomjerry@331'  
-
-
-
-# Decorator to check if a user is logged in before accessing certain pages
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Check if user or admin is logged in
-        if 'user_id' not in session and 'admin' not in session:
-            return redirect(url_for('index'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-
-
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'admin' not in session:
-            flash('Admin access required!')
-            return redirect(url_for('index'))
-        return f(*args, **kwargs)
-    return decorated_function
-
 
 # ------------------------------ ROUTES ------------------------------
 
@@ -173,6 +58,7 @@ def user_login():
             flash(f'Login error: {str(e)}')
     
     return render_template('user_login.html')
+
 
 
 
@@ -264,21 +150,21 @@ def dashboard():
         categories = list(categories_collection.find())
         
         # Check if admin is logged in
-        is_admin = 'admin' in session
+        is_admin  = 'admin' in session
         user_name = session.get('admin_name', session.get('user_name', 'User'))
         
         return render_template('dashboard.html', 
-                             recent_offers=recent_offers, 
-                             categories=categories,
-                             is_admin=is_admin,
-                             user_name=user_name)
+                             recent_offers  =   recent_offers, 
+                             categories     =   categories,
+                             is_admin       =   is_admin,
+                             user_name      =   user_name)
     except Exception as e:
         flash(f'Dashboard error: {str(e)}')
         return render_template('dashboard.html', 
-                             recent_offers=[], 
-                             categories=[],
-                             is_admin=False,
-                             user_name='User')
+                             recent_offers  =   [], 
+                             categories     =   [],
+                             is_admin       =   False,
+                             user_name      =   'User')
     
 
 
@@ -289,7 +175,8 @@ def view_category(category_name):
     try:
         category_name_decoded = unquote(category_name)
         products = list(products_collection.find({'category': category_name_decoded}))
-        return render_template('category.html', products=products, category_name=category_name_decoded)
+        return render_template('category.html', products=products, 
+                                                category_name=category_name_decoded)
     except Exception as e:
         flash(f'Error loading category: {str(e)}')
         return render_template('category.html', products=[], category_name=category_name)
@@ -310,8 +197,8 @@ def add_category():
                 flash('Category already exists!')
             else:
                 categories_collection.insert_one({
-                    'name': category_name,
-                    'created_at': datetime.now()
+                    'name'          : category_name,
+                    'created_at'    : datetime.now()
                 })
                 flash('Category added successfully!')
         except Exception as e:
@@ -326,6 +213,7 @@ def add_category():
         categories = []
     
     return render_template('add_category.html', categories=categories)
+
 
 
 
@@ -371,6 +259,8 @@ def add_product():
                     categories = list(categories_collection.find())
                     return render_template('add_product.html', categories=categories)
             
+
+
             # Create product data
             product_data = {
                 'name'          : product_name,
@@ -382,6 +272,8 @@ def add_product():
                 'image_filename': image_filename,
                 'has_image'     : image_data is not None
             }
+            
+
             
             # Insert product into database
             result = products_collection.insert_one(product_data)
@@ -495,10 +387,10 @@ def manage_products():
         total_pages = (total_products + per_page - 1) // per_page
         
         return render_template('manage_products.html',
-                             products=products,
-                             current_page=page,
-                             total_pages=total_pages,
-                             total_products=total_products)
+                             products       =   products,
+                             current_page   =   page,
+                             total_pages    =   total_pages,
+                             total_products =   total_products)
     except Exception as e:
         flash(f'Error loading products: {str(e)}')
         return render_template('manage_products.html', 
@@ -507,6 +399,7 @@ def manage_products():
                              total_pages    =   0,
                              total_products =   0)
     
+    # User: Add product to wishlist
 
 @app.route('/Wishcart/<product_id>', methods=[' GET','POST'])
 @login_required
@@ -517,15 +410,15 @@ def add_to_wishcart(product_id):
         
     user_id = session.get('user_id')
     existing = wishcart_collection.find_one({
-        'user_id': ObjectId(user_id),
-        'product_id': ObjectId(product_id)
+        'user_id'       : ObjectId(user_id),
+        'product_id'    : ObjectId(product_id)
     })
     
     if not existing:
         wishcart_collection.insert_one({
-            'user_id': ObjectId(user_id),
-            'product_id': ObjectId(product_id),
-            'added_at': datetime.now()
+            'user_id'       : ObjectId(user_id),
+            'product_id'    : ObjectId(product_id),
+            'added_at'      : datetime.now()
         })
         flash('Product added to Wishlist!')
     else:
@@ -545,7 +438,9 @@ def view_wishcart():
     wish_items = list(wishcart_collection.find({'user_id': ObjectId(user_id)}))
     product_ids = [item['product_id'] for item in wish_items]
     products = list(products_collection.find({'_id': {'$in': product_ids}}))
-    return render_template('Wishcart.html', product_ids=product_ids, wish_items=wish_items, products=products)
+    return render_template('Wishcart.html', product_ids=product_ids,
+                                            wish_items=wish_items, 
+                                            products=products)
 
 
 
@@ -558,8 +453,8 @@ def remove_from_wishcart(product_id):
         
     user_id = session.get('user_id')
     wishcart_collection.delete_one({
-        'user_id': ObjectId(user_id),
-        'product_id': ObjectId(product_id)
+        'user_id'       : ObjectId(user_id),
+        'product_id'    : ObjectId(product_id)
     })
     flash('Product removed from Wishlist.')
     return redirect(url_for('view_wishcart'))
