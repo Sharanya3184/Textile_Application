@@ -14,9 +14,9 @@ from PIL import Image
 import io
 from bson import ObjectId
 from bson.regex import Regex
+from modules import products_collection, categories_collection
 from urllib.parse import unquote
-from dotenv import load_dotenv
-load_dotenv()
+
 
 
 
@@ -27,14 +27,6 @@ app.secret_key = 'sharanya@331'
 
 
 
-# ------------------------------ MONGODB CONNECTION ------------------------------
-
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
-users_collection = db['users']
-products_collection = db['products']
-categories_collection = db['categories']
-wishcart_collection = db['wishlist']
 
 # ------------------------------ MONGODB CONNECTION ------------------------------
 
