@@ -25,6 +25,22 @@ from urllib.parse import unquote
 app = Flask(__name__)
 app.secret_key = 'sharanya@331'
 
+
+
+
+# ------------------------------ MONGODB CONNECTION ------------------------------
+
+try:
+    users_collection         =  db['users']
+    products_collection      =  db['products']
+    categories_collection    =  db['categories']
+    wishcart_collection      =  db['wishcart']
+    print("MongoDB connected successfully")
+except Exception as e:
+    print(f"MongoDB connection error: {e}")
+
+
+
 # ------------------------------ CONFIG ------------------------------
 
 UPLOAD_FOLDER            =  'uploads'
