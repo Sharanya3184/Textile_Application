@@ -14,7 +14,6 @@ from PIL import Image
 import io
 from bson import ObjectId
 from bson.regex import Regex
-from modules import products_collection, categories_collection
 from urllib.parse import unquote
 
 
