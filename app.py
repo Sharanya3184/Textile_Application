@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from modules import *
+from modules import products_collection, users_collection
 from datetime import datetime
 import os
 import base64
