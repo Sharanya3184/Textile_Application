@@ -17,8 +17,7 @@ from bson.regex import Regex
 from urllib.parse import unquote
 from modules import products_collection, categories_collection
 from init import *
-from dotenv import load_dotenv
-load_dotenv()
+
 
 
 
